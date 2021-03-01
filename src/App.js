@@ -1,24 +1,38 @@
-import logo from './logo.svg';
-import './App.css';
+import React, {Fragment, useState, useEffect} from 'react';
+import Header from './components/Header';
+import Formulario from './components/Formulario';
+import ContenedorInfo from './components/ContenedorInfo';
 
 function App() {
+
+  //State
+  const [movie, saveMovie] = useState('');
+  const [movieresult, saveMovieResult] = useState({});
+
+  //Effect
+  useEffect(() => {
+    if(movie === '') return;
+
+    const consultarAPI = async () => {
+      const apiKey = '613ef410' ;
+      const url = `https://www.omdbapi.com/?t=${movie}&apikey=${apiKey}`;
+
+      const respuesta = await fetch(url);
+      const resultado = await respuesta.json();
+
+      saveMovieResult(resultado);
+    }
+
+    consultarAPI();
+  }, [movie])
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Fragment>
+      <Header />
+      <Formulario saveMovie={saveMovie} />
+      {movie ? <ContenedorInfo movieresult={movieresult} /> : <p className="text-center">No has realizado una búsqueda, comienza añadiendo el nombre de una pelicula</p>}
+    </Fragment>
+  
   );
 }
 
